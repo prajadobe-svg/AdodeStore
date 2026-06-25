@@ -19,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+              <script src="https://assets.adobedtm.com/6a203c8a0ff8/aeb100c194c7/launch-59192a116ea8.min.js" async></script>
         <SiteHeader />
+        
+        
         <main>{children}</main>
         <SiteFooter />
       </body>
