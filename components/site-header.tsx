@@ -20,8 +20,8 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <script src="https://assets.adobedtm.com/e9875dd51dbe/388b9dd9eb82/launch-0197eededa87-development.min.js" async></script>
-      <div className="container-page flex h-16 items-center justify-between">
+
+       <div className="container-page flex h-16 items-center justify-between">
         <Link href="/" className="text-lg font-bold">
           AdobeStore
         </Link>
