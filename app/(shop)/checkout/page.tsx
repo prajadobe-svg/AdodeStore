@@ -1,9 +1,32 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getStoredUser } from "@/lib/auth-client";
 
 export default function CheckoutPage() {
+  const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = getStoredUser();
+    if (!storedUser) {
+      router.push("/sign-in");
+      return;
+    }
+
+    setUser(storedUser);
+  }, [router]);
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="container-page py-12">
       <h1 className="text-4xl font-bold">Checkout</h1>
+      <p className="mt-4 text-slate-600">You're signed in as {user.name}. Complete your purchase below.</p>
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <form className="card space-y-4 p-6">
           <div>
@@ -11,6 +34,8 @@ export default function CheckoutPage() {
             <input
               className="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3"
               placeholder="you@example.com"
+              value={user.email}
+              readOnly
             />
           </div>
           <div>
