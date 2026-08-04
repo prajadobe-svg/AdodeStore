@@ -4,7 +4,11 @@ import { createBearerToken, getDemoUser } from "@/lib/auth-server";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const email = String(body.email || "").trim().toLowerCase();
+
+  const email = String(body.email || "")
+    .trim()
+    .toLowerCase();
+
   const password = String(body.password || "").trim();
 
   if (email !== DEMO_USER_EMAIL || password !== DEMO_USER_PASSWORD) {
@@ -14,6 +18,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = createBearerToken(email);
-  return NextResponse.json({ ok: true, token, user: getDemoUser() });
+  const user = getDemoUser();
+  const token = createBearerToken(user);
+
+  return NextResponse.json({
+    ok: true,
+    token,
+    user,
+  });
 }

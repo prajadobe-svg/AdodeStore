@@ -13,21 +13,34 @@ function base64UrlEncode(value: string | Buffer) {
 }
 
 function base64UrlDecode(value: string) {
-  const padded = value.padEnd(value.length + ((4 - (value.length % 4)) % 4), "=");
-  return Buffer.from(padded.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString();
+  const padded = value.padEnd(
+    value.length + ((4 - (value.length % 4)) % 4),
+    "="
+  );
+
+  return Buffer.from(
+    padded.replace(/-/g, "+").replace(/_/g, "/"),
+    "base64"
+  ).toString();
 }
 
 function sign(payload: string) {
-  return base64UrlEncode(createHmac("sha256", SECRET).update(payload).digest());
+  return base64UrlEncode(
+    createHmac("sha256", SECRET).update(payload).digest()
+  );
 }
 
-export function createBearerToken(email: string) {
+export function createBearerToken(user: DemoUser) {
+  const now = Math.floor(Date.now() / 1000);
+
   const payload: AuthPayload = {
-    email,
-    name: "Demo User",
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS,
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    iat: now,
+    exp: now + TOKEN_TTL_SECONDS,
   };
+
   const payloadString = JSON.stringify(payload);
   const encodedPayload = base64UrlEncode(payloadString);
   const signature = sign(encodedPayload);
@@ -37,11 +50,13 @@ export function createBearerToken(email: string) {
 
 export function verifyBearerToken(token: string): AuthPayload | null {
   const [encodedPayload, signature] = token.split(".");
+
   if (!encodedPayload || !signature) {
     return null;
   }
 
   const expectedSignature = sign(encodedPayload);
+
   if (signature !== expectedSignature) {
     return null;
   }
@@ -50,7 +65,13 @@ export function verifyBearerToken(token: string): AuthPayload | null {
     const payloadString = base64UrlDecode(encodedPayload);
     const payload = JSON.parse(payloadString) as AuthPayload;
 
-    if (!payload.email || !payload.name || !payload.exp || !payload.iat) {
+    if (
+      !payload.id ||
+      !payload.email ||
+      !payload.name ||
+      !payload.exp ||
+      !payload.iat
+    ) {
       return null;
     }
 
@@ -66,6 +87,7 @@ export function verifyBearerToken(token: string): AuthPayload | null {
 
 export function getDemoUser(): DemoUser {
   return {
+    id: "praj-store-demo-user-1001",
     email: DEMO_USER_EMAIL,
     name: "Demo User",
   };

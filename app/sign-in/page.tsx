@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveToken } from "@/lib/auth-client";
-import { initAdobeSession, trackAdobeAuthEvent } from "@/lib/adobe";
+import { trackAdobeAuthEvent } from "@/lib/adobe";
 
 const DEMO_USER_EMAIL = "demo.user@company.com";
 const DEMO_USER_PASSWORD = "demo123";
@@ -43,8 +43,12 @@ export default function SignInPage() {
     }
 
     saveToken(data.token);
-    initAdobeSession(data.token);
-    trackAdobeAuthEvent("login", data.token, data.user);
+    try {
+      await trackAdobeAuthEvent("login", data.user);
+    } catch (adobeError) {
+      // Authentication remains successful if a privacy extension blocks tracking.
+      console.error("Adobe login event failed", adobeError);
+    }
 
     router.push("/account");
   };
