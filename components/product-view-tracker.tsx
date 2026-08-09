@@ -17,7 +17,7 @@ export function ProductViewTracker({
   product: Product;
 }) {
   const trackedProducts = useRef<Set<string>>(new Set());
-
+  const storedUser = getStoredUser();
   useEffect(() => {
     const trackingKey = product.slug;
 
@@ -32,9 +32,10 @@ export function ProductViewTracker({
 
     void sendAdobeEvent({
       eventType: "commerce.productViews",
-      user: getStoredUser() || undefined,
+      user: storedUser || undefined,
       aamSignals: {
         c_store_event: "product_view",
+        ...(storedUser ? { c_authenticated: "true" } : {}),
         c_product_category: product.category.toLowerCase(),
         c_product_sku: product.slug,
       },
