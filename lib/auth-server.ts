@@ -87,7 +87,7 @@ export function verifyBearerToken(token: string): AuthPayload | null {
 
 export function getDemoUser(): DemoUser {
   return {
-    id: "praj-store-demo-user-1002",
+    id: "praj-store-demo-user-1003",
     email: DEMO_USER_EMAIL,
     name: "Demo User",
   };
